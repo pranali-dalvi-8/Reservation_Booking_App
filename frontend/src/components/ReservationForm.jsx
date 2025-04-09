@@ -1,4 +1,8 @@
 import React, { useState } from 'react'
+import axios from 'axios'
+import { toast } from 'react-toastify'
+import 'react-toastify/dist/ReactToastify.css';
+import { backendUrl } from '../App'
 
 const ReservationForm = () => {
     const[formData,setFormData]= useState({
@@ -15,7 +19,20 @@ const ReservationForm = () => {
     }
 
 
+     const handelSubmit = async (e) => {
+      e.preventDefault();
 
+      try{
+        await axios.post(`${backendUrl}/api/reservations/create`, formData);
+
+      toast.success('Reservation successfully created!');
+
+        setFormData({ name : "" ,email : "", phone : "", date : "" ,time : "", guest : "1", })
+
+      }catch(error){
+          console.log("error making reservation");
+      }
+     };
 
 
 
@@ -34,7 +51,8 @@ const ReservationForm = () => {
     }
   return (
     <div  className='flex justify-center items-center min-h-screen bg-gray-100                 '>
-       <form className='bg-white p-8 rounded-xl shadow-lg w-full max-w-md'    >
+       <form  onSubmit={handelSubmit}
+       className='bg-white p-8 rounded-xl shadow-lg w-full max-w-md'    >
          <h2 className='text-2xl font-semibold text-center text-gray-700 mb-6'>Book a Reservation</h2>
 
 
@@ -54,9 +72,11 @@ const ReservationForm = () => {
            ))} 
          </select>
          <select required name='guest' value={formData.guest} onChange={handelChanges} className='w-full p-3 mb-3 border rounded-lg focus:ring focus:ring-emerald-300 ' >
-           {[... Array(10).keys().map(i=>(
-             <option key={i+1} value={i+1} >{ i + 1 } Guest(s)</option>
-           ))]}
+        {
+         Array.from(Array(10).keys()).map(i => (
+  <option key={i+1} value={i+1}>{i + 1} Guest(s)</option>
+))
+}
          </select>
          
          <button type='submit' className='w-full bg-emerald-500 text-white p-3 rounded-lg hover:bg-emerald-600 transition '>Book NOW</button>
